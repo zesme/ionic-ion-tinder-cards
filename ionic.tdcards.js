@@ -440,6 +440,8 @@
           secondCard && adjustCard(secondCard, amt, 0, 4);
           thirdCard && adjustCard(thirdCard, amt, 4, 8);
         };
+
+        $scope.sortCards = sortCards;
       }]
     }
   }])
