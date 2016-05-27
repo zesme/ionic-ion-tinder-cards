@@ -400,21 +400,86 @@
         var cards;
         var firstCard, secondCard, thirdCard;
 
-        var existingCards, card;
+        var existingCards;
+
+        var element;
 
         var i, j;
 
+        var sortCard = function (card) {
+          element = angular.element(card);
+
+          var parentWidth = card.parentNode.offsetWidth;
+          var width = card.offsetWidth;
+
+          var parentHeight = card.parentNode.offsetHeight;
+          var height = card.offsetHeight;
+
+          var animation = collide.animation({
+            easing: 'ease-in-out',
+            duration: 500,
+            percent: 0,
+            reverse: false
+          });
+
+          card.style.zIndex = (existingCards.length - i);
+
+          if(element.hasClass("card-slide-in")) {
+            var startX = 0;
+            var startY = 0;
+
+            if(element.hasClass("card-slide-right")) {
+              startX = parentWidth + width;
+              element.removeClass("card-slide-right");
+            } else if(element.hasClass("card-slide-left")) {
+              startX = -parentWidth - width;
+              element.removeClass("card-slide-left");
+            } else if(element.hasClass("card-slide-top")) {
+              // TODO This has to be dynamic, relative to parent. At the moment, it doesn't work as the parent
+              // necessarily needs height 0, or else cards will not stack.
+              //startY = -parentHeight - height;
+              startY = height * -2;
+              element.removeClass("card-slide-top");
+            } else if(element.hasClass("card-slide-bottom")) {
+              // TODO This has to be dynamic, relative to parent. At the moment, it doesn't work as the parent
+              // necessarily needs height 0, or else cards will not stack.
+              //startY = parentHeight + height;
+              startY = height * -2;
+              element.removeClass("card-slide-bottom");
+            } else {
+              // TODO Should throw an error, as having the class slide-in requires one of these four
+              // properties.
+            }
+
+            element.removeClass("card-slide-in");
+
+            card.style.transform = card.style.webkitTransform = 'translate3d(' + startX + 'px, ' + startY + 'px, 0)';
+            animation
+              .on('step', function (v) { stepAnimation('wat', card, startX, startY, v) })
+              .start();
+            } else {
+              if(i > 0) card.style.transform = card.style.webkitTransform = 'translate3d(0, ' + (i * 4) + 'px, 0)';
+            }
+        };
+
         var sortCards = function() {
+          // Add checking for class here. If it has the slide-in-right, do from right, etc.
           existingCards = $element[0].querySelectorAll('td-card');
 
           for(i = 0; i < existingCards.length; i++) {
-            card = existingCards[i];
-            if(!card) continue;
-            if(i > 0) {
-              card.style.transform = card.style.webkitTransform = 'translate3d(0, ' + (i * 4) + 'px, 0)';
-            }
-            card.style.zIndex = (existingCards.length - i);
+            if(!existingCards[i]) continue;
+            sortCard(existingCards[i]);
           }
+        };
+
+        var stepAnimation = function(type, el, startX, startY, v) {
+          //swipeCards.partial(1 - v);
+          var stepX = startX - startX*v;
+          var stepY = startY - startY*v;
+
+          el.style.transform = el.style.webkitTransform = 'translate3d(' + stepX + 'px, ' + stepY + 'px, 0)';
+          //if (rightText) rightText.style.opacity = 0;
+          //if (leftText) leftText.style.opacity = 0;
         };
 
         $timeout(function() {
