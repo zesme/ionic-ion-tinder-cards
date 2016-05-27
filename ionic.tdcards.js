@@ -291,12 +291,10 @@
           // Instantiate our card view
           var swipeableCard = new SwipeableCardView({
             el: el,
-            leftText: el.querySelector('.yes-text'),
-            rightText: el.querySelector('.no-text'),
+            leftText: el.querySelector('.no-text'),
+            rightText: el.querySelector('.yes-text'),
             onPartialSwipe: function(amt) {
               swipeCards.partial(amt);
-              this.leftText = this.leftText || el.querySelector('.no-text');
-              this.rightText = this.rightText || el.querySelector('.yes-text');
               var self = this;
               $timeout(function() {
                 if (amt < 0) {
