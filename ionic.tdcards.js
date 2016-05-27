@@ -116,7 +116,7 @@
     swipe: function() {
       this.transitionOut();
     },
-    
+
     /**
      * Snap the card back to its original position
      */
@@ -140,7 +140,7 @@
       }
 
       self.onTransitionOut(self.thresholdAmount);
-      
+
       var angle = Math.atan(e.gesture.deltaX / e.gesture.deltaY);
 
       var dir = this.thresholdAmount < 0 ? -1 : 1;
@@ -158,7 +158,7 @@
       var rotateTo = this.rotationAngle;//(this.rotationAngle this.rotationDirection * 0.2));// || (Math.random() * 0.4);
 
       var duration = 0.3 - Math.min(Math.max(Math.abs(e.gesture.velocityX)/10, 0.05), 0.2);
-      
+
       ionic.requestAnimationFrame(function() {
         self.el.style.transform = self.el.style.webkitTransform = 'translate3d(' + targetX + 'px, ' + targetY + 'px,0) rotate(' + self.rotationAngle + 'rad)';
         self.el.style.transition = self.el.style.webkitTransition = 'all ' + duration + 's ease-in-out';
@@ -286,7 +286,7 @@
           var el = $element[0];
           var leftText = el.querySelector('.no-text');
           var rightText = el.querySelector('.yes-text');
-          
+
           // Force hardware acceleration for animation - better performance on first touch
           el.style.transform = el.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
 
@@ -362,10 +362,12 @@
                 frequency: 15,
                 friction: 250,
                 initialForce: false
-              }) 
+              })
 
               .on('step', function(v) {
                 //Have the element spring over 400px
+                swipeCards.partial(1 - v);
+                console.log(v);
                 el.style.transform = el.style.webkitTransform = 'translate3d(' + (startX - startX*v) + 'px, ' + (startY - startY*v) + 'px, 0) rotate(' + (startRotation - startRotation*v) + 'rad)';
                 if (rightText) rightText.style.opacity = 0;
                 if (leftText) leftText.style.opacity = 0;
@@ -421,10 +423,11 @@
           sortCards();
         });
 
-        var bringCardUp = function(card, amt, max) {
+        // Adjusts the position of the lower cards on the deck
+        var adjustCard = function(card, amt, min, max) {
           var position, newTop;
           position = card.style.transform || card.style.webkitTransform;
-          newTop = Math.max(0, Math.min(max, max - (max * Math.abs(amt))));
+          newTop = Math.max(min, Math.min(max, max - ((max - min) * Math.abs(amt))));
           card.style.transform = card.style.webkitTransform = 'translate3d(0, ' + newTop + 'px, 0)';
         };
 
@@ -434,8 +437,8 @@
           secondCard = cards.length > 1 && cards[1];
           thirdCard = cards.length > 2 && cards[2];
 
-          secondCard && bringCardUp(secondCard, amt, 4);
-          thirdCard && bringCardUp(thirdCard, amt, 8);
+          secondCard && adjustCard(secondCard, amt, 0, 4);
+          thirdCard && adjustCard(thirdCard, amt, 4, 8);
         };
       }]
     }
