@@ -284,8 +284,6 @@
       compile: function(element, attr) {
         return function($scope, $element, $attr, swipeCards) {
           var el = $element[0];
-          var leftText = el.querySelector('.no-text');
-          var rightText = el.querySelector('.yes-text');
 
           // Force hardware acceleration for animation - better performance on first touch
           el.style.transform = el.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
@@ -293,10 +291,12 @@
           // Instantiate our card view
           var swipeableCard = new SwipeableCardView({
             el: el,
-            leftText: leftText,
-            rightText: rightText,
+            leftText: el.querySelector('.yes-text'),
+            rightText: el.querySelector('.no-text'),
             onPartialSwipe: function(amt) {
               swipeCards.partial(amt);
+              this.leftText = this.leftText || el.querySelector('.no-text');
+              this.rightText = this.rightText || el.querySelector('.yes-text');
               var self = this;
               $timeout(function() {
                 if (amt < 0) {
@@ -306,6 +306,7 @@
                   if (self.leftText) self.leftText.style.opacity = 0;
                   if (self.rightText) self.rightText.style.opacity = fadeFn(amt);
                 }
+
                 $scope.onPartialSwipe({amt: amt});
               });
             },
@@ -367,7 +368,6 @@
               .on('step', function(v) {
                 //Have the element spring over 400px
                 swipeCards.partial(1 - v);
-                console.log(v);
                 el.style.transform = el.style.webkitTransform = 'translate3d(' + (startX - startX*v) + 'px, ' + (startY - startY*v) + 'px, 0) rotate(' + (startRotation - startRotation*v) + 'rad)';
                 if (rightText) rightText.style.opacity = 0;
                 if (leftText) leftText.style.opacity = 0;
