@@ -213,35 +213,42 @@
 
     _doDragStart: function(e) {
       e.preventDefault();
-      var width = this.el.offsetWidth;
-      var point = window.innerWidth / 2 + this.rotationDirection * (width / 2)
-      var distance = Math.abs(point - e.gesture.touches[0].pageX);// - window.innerWidth/2);
 
-      this.touchDistance = distance * 10;
+      if(!angular.element(this.el).hasClass('card-no-swipe')) {
+        var width = this.el.offsetWidth;
+        var point = window.innerWidth / 2 + this.rotationDirection * (width / 2)
+        var distance = Math.abs(point - e.gesture.touches[0].pageX);// - window.innerWidth/2);
+
+        this.touchDistance = distance * 10;
+      }
     },
 
     _doDrag: function(e) {
       e.preventDefault();
 
-      var o = e.gesture.deltaX / -1000;
+      if(!angular.element(this.el).hasClass('card-no-swipe')) {
+        var o = e.gesture.deltaX / -1000;
 
-      this.rotationAngle = Math.atan(o);
+        this.rotationAngle = Math.atan(o);
 
-      this.x = this.startX + (e.gesture.deltaX * 0.8);
-      this.y = this.startY + (e.gesture.deltaY * 0.8);
+        this.x = this.startX + (e.gesture.deltaX * 0.8);
+        this.y = this.startY + (e.gesture.deltaY * 0.8);
 
-      this.el.style.transform = this.el.style.webkitTransform = 'translate3d(' + this.x + 'px, ' + this.y  + 'px, 0) rotate(' + (this.rotationAngle || 0) + 'rad)';
+        this.el.style.transform = this.el.style.webkitTransform = 'translate3d(' + this.x + 'px, ' + this.y  + 'px, 0) rotate(' + (this.rotationAngle || 0) + 'rad)';
 
 
-      this.thresholdAmount = (this.x / (this.parentWidth/2));
+        this.thresholdAmount = (this.x / (this.parentWidth/2));
 
-      var self = this;
-      setTimeout(function() {
-        self.onPartialSwipe(self.thresholdAmount);
-      });
+        var self = this;
+        setTimeout(function() {
+          self.onPartialSwipe(self.thresholdAmount);
+        });
+      }
     },
     _doDragEnd: function(e) {
-      this.transitionOut(e);
+      if(!angular.element(this.el).hasClass('card-no-swipe')) {
+        this.transitionOut(e);
+      }
     }
   });
 
